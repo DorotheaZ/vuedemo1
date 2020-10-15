@@ -7,6 +7,7 @@ import Edit from '../views/Edit.vue'
 import MyFollow from '../views/MyFollow.vue'
 import MyComment from '../views/MyComment.vue'
 import MyStar from '../views/MyStar.vue'
+import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
 
@@ -49,6 +50,11 @@ const router = new VueRouter({
       path: '/my-star',
       name: 'my-star',
       component: MyStar
+    },
+    {
+      path: '/home',
+      name: 'home',
+      component: Home
     }
   ]
 })

@@ -77,7 +77,7 @@ export default {
           localStorage.setItem('token', data.token)
           localStorage.setItem('user_id', data.user.id)
           this.$toast.success('登录成功')
-          this.$router.push('/user')
+          this.$router.push('/home')
         } else {
           this.$toast.fail('用户名密码错误')
         }
