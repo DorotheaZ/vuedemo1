@@ -19,9 +19,13 @@ import {
   Radio,
   RadioGroup,
   Uploader,
-  List
+  List,
+  Tab,
+  Tabs
 } from 'vant'
 
+Vue.use(Tab)
+Vue.use(Tabs)
 Vue.use(List)
 Vue.use(Uploader)
 Vue.use(Radio)

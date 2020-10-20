@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <!-- 头部 -->
     <div class="header">
       <div class="left">
         <i class="iconfont iconnew"></i>
@@ -12,14 +13,58 @@
         <i class="iconfont iconwode" @click="$router.push('user')"></i>
       </div>
     </div>
+    <!-- tab栏 -->
+    <van-tabs v-model="active" sticky>
+      <van-tab :title="tab.name" v-for="tab in tabsList" :key="tab.id">
+        <hm-post v-for="post in postList" :key="post.id" :post="post"></hm-post>
+      </van-tab>
+    </van-tabs>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      active: 1,
+      tabsList: [],
+      postList: [],
+    }
+  },
+  async created() {
+    let res = await this.$axios.get('/category')
+    const { statusCode, data } = res.data
+    if (statusCode === 200) {
+      this.tabsList = data
+      this.getPostList(this.tabsList[this.active].id)
+    }
+  },
+  watch: {
+    active(newValue) {
+      const id = this.tabsList[newValue].id
+      this.getPostList(id)
+    },
+  },
+  methods: {
+    async getPostList(id) {
+      const res = await this.$axios.get('/post', {
+        params: {
+          category: id,
+        },
+      })
+      const { statusCode, data } = res.data
+      if (statusCode === 200) {
+        this.postList = data
+      }
+    },
+  },
+}
 </script>
 
 <style lang="less" scoped>
+/deep/ .van-tabs__nav {
+  background: #ccbbbb;
+}
 .header {
   height: 50px;
   background-color: #f00;
