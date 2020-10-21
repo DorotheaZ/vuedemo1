@@ -8,6 +8,7 @@ import MyFollow from '../views/MyFollow.vue'
 import MyComment from '../views/MyComment.vue'
 import MyStar from '../views/MyStar.vue'
 import Home from '../views/Home.vue'
+import Detail from '../views/Detail.vue'
 
 Vue.use(VueRouter)
 
@@ -55,11 +56,15 @@ const router = new VueRouter({
       path: '/home',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/detail/:id',
+      name: 'detail',
+      component: Detail
     }
   ]
 })
 router.beforeEach((to, from, next) => {
-  console.log('守卫:', to.path, from.path)
   const authUrl = ['/user', '/edit', '/my-star', '/my-comment', '/my-follow']
   if (authUrl.includes(to.path)) {
     let token = localStorage.getItem('token')

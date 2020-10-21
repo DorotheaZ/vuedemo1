@@ -14,9 +14,30 @@
       </div>
     </div>
     <!-- tab栏 -->
+    <van-sticky :offset-top="0" z-index="999">
+      <!-- 添加 z-index 滚动后点击方可 -->
+      <div class="container" @click="$router.push('/tabedit')">
+        <i class="iconfont iconjiantou1"></i>
+      </div>
+    </van-sticky>
     <van-tabs v-model="active" sticky>
       <van-tab :title="tab.name" v-for="tab in tabsList" :key="tab.id">
-        <hm-post v-for="post in postList" :key="post.id" :post="post"></hm-post>
+        <van-pull-refresh @refresh="onRefresh" v-model="isRefreshing">
+          <van-list
+            v-model="loading"
+            :finished="finished"
+            offset="50"
+            @load="onLoad"
+            :immediate-check="false"
+          >
+            <hm-post
+              v-for="(post, index) in postList"
+              :key="index.id"
+              :post="post"
+              @click.native="$router.push(`/detail/${post.id}`)"
+            ></hm-post>
+          </van-list>
+        </van-pull-refresh>
       </van-tab>
     </van-tabs>
   </div>
@@ -29,6 +50,11 @@ export default {
       active: 1,
       tabsList: [],
       postList: [],
+      pageIndex: 1,
+      pageSize: 5,
+      loading: false,
+      finished: false,
+      isRefreshing: false,
     }
   },
   async created() {
@@ -41,8 +67,11 @@ export default {
   },
   watch: {
     active(newValue) {
-      const id = this.tabsList[newValue].id
-      this.getPostList(id)
+      this.postList = []
+      this.pageIndex = 1
+      this.finished = false
+      this.loading = true
+      this.getPostList(this.tabsList[newValue].id)
     },
   },
   methods: {
@@ -50,20 +79,52 @@ export default {
       const res = await this.$axios.get('/post', {
         params: {
           category: id,
+          pageIndex: this.pageIndex,
+          pageSize: this.pageSize,
         },
       })
       const { statusCode, data } = res.data
       if (statusCode === 200) {
-        this.postList = data
+        this.postList = [...this.postList, ...data]
+        this.loading = false
+        this.isRefreshing = false
+        if (data.length < this.pageSize) {
+          this.finished = true
+        }
       }
+    },
+    onLoad() {
+      this.loading = false
+      this.pageIndex++
+      this.getPostList(this.tabsList[this.active].id)
+    },
+    onRefresh() {
+      setTimeout(() => {
+        this.postList = []
+        this.pageIndex = 1
+        this.finished = false
+        this.getPostList(this.tabsList[this.active].id)
+      }, 1000)
     },
   },
 }
 </script>
 
 <style lang="less" scoped>
+.container {
+  width: 40px;
+  height: 44.7px;
+  line-height: 43.98px;
+  text-align: center;
+
+  background: #ccbbbb;
+  position: absolute;
+  right: 0;
+  z-index: 999; // 添加 z-index 点击方可
+}
 /deep/ .van-tabs__nav {
   background: #ccbbbb;
+  margin-right: 40px;
 }
 .header {
   height: 50px;
