@@ -11,6 +11,7 @@ import HmPost from './components/HmPost.vue'
 import HmComment from './components/HmComment.vue'
 import HmFloor from './components/HmFloor.vue'
 import axios from 'axios'
+import _ from 'lodash'
 import moment from 'moment'
 import {
   Field,
@@ -47,6 +48,7 @@ Vue.filter('date', (res, format = 'YYYY-MM-DD') => {
   return moment(res).format(format)
 })
 Vue.prototype.$axios = axios
+Vue.prototype.$_ = _
 axios.defaults.baseURL = 'http://localhost:3000'
 Vue.component('hm-button', HmButton)
 Vue.component('hm-logo', HmLogo)

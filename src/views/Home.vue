@@ -5,7 +5,7 @@
       <div class="left">
         <i class="iconfont iconnew"></i>
       </div>
-      <div class="center">
+      <div class="center" @click="$router.push('/search')">
         <i class="iconfont iconsearch"></i>
         <span>搜索新闻</span>
       </div>
@@ -58,12 +58,14 @@ export default {
     }
   },
   async created() {
-    let res = await this.$axios.get('/category')
-    const { statusCode, data } = res.data
-    if (statusCode === 200) {
-      this.tabsList = data
-      this.getPostList(this.tabsList[this.active].id)
+    let activeTabs = JSON.parse(localStorage.getItem('activeTabs'))
+    let deactiveTabs = JSON.parse(localStorage.getItem('deactiveTabs'))
+    if (activeTabs && deactiveTabs) {
+      this.tabsList = activeTabs
+      return
     }
+    this.getTabsList()
+    this.getPostList(this.tabsList[this.active].id)
   },
   watch: {
     active(newValue) {
@@ -75,6 +77,13 @@ export default {
     },
   },
   methods: {
+    async getTabsList() {
+      let res = await this.$axios.get('/category')
+      const { statusCode, data } = res.data
+      if (statusCode === 200) {
+        this.tabsList = data
+      }
+    },
     async getPostList(id) {
       const res = await this.$axios.get('/post', {
         params: {
